@@ -1,3 +1,0 @@
-female rd replication.do (application/x-stata-syntax) 3002 bytes.
-female-rd-log.smcl (text/plain; charset=US-ASCII) 338687 bytes.
-main data.dta (application/x-stata) 4177152 bytes.

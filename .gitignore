@@ -1,0 +1,7 @@
+
+female rd replication.do
+female-rd-log.smcl
+main data.dta
+MANIFEST.TXT
+female-rd-log.smcl
+main data.dta
