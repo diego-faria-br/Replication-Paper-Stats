@@ -1,0 +1,62 @@
+---
+title: "Statistics II: Statistical Modeling & Causal Inference"
+subtitle: "Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach"
+author: "Diego Oliveira Faria"
+date: "26/04/2020"
+output: 
+  html_document:
+    theme: journal
+    highlight: pygments
+    toc: yes
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Summary {.tabset .tabsetfade}
+
+## Women in Politics
+
+Gender gap in politics is a pressing issue in many countries, both in terms of mass and elite participation. Participation in the mass level means casting, participation in the elite level means occupying positions as ellected officials. Such a phenomena have called attention from many scholars. 
+
+The question to be answerered in this paper is wheter the presence of women as canditate or as officeholders help to close the gender-gap of participation in the government by making them women to run and vote more?
+
+Previous works suggests that elections of women has a positive impact on both women's political participation and presence in office.
+
+
+## Data
+
+## Empirical Strategy
+
+## Findings
+
+Statistically there was no discernible effect. Election of additional woman had no effect on the women's political participation or . Results in contrast with a number of findings from India. Although ellecting the first woman may have an impact, other barriers may be too strong to erode by simply ellecting more women.
+
+
+# Analysis {.tabset .tabsetfade}
+
+## Candidacy, voting and representativity
+
+## Breaking the Glass
+
+# Going Beyond {.tabset .tabsetfade}
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
