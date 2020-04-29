@@ -5,6 +5,7 @@ author: "Diego Oliveira Faria"
 date: "26/04/2020"
 output: 
   html_document: 
+    fig_caption: yes
     fig_width: 5
     highlight: pygments
     number_sections: yes
@@ -177,7 +178,7 @@ stargazer(reg1,reg2,reg3,type = "html",title="Table 1 - Replication",
 
 ### Replication - Graphics
 
-```{r Graphics, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE}
+```{r Graphics 1, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE}
 
 g1<-ggplot(dat_filtered, aes(x=margin,y=nextyear))+
     geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
@@ -232,7 +233,7 @@ gridExtra::  grid.arrange(g2,g3,g1,nrow=3)
 
 ## Breaking the Glass
 
-```{r Table2,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}}
+```{r Table2,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
 
 datcand10 <- dat_filtered %>% dplyr:: select(nextyear,margin,cand10)
 datcand75 <- dat_filtered %>% dplyr:: select(margin,womanwon,cand75)
@@ -301,6 +302,70 @@ stargazer(regcand75,regcand10,regwin75,regwin10,type = "html",title="Table 2 - R
 
 
 ```
+
+
+```{r Graphics 2, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE,fig.width=10}
+
+g4<-ggplot(dat_filtered, aes(x=margin,y=cand75))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Female Candidates 75 miles")+
+  stat_summary_bin(binwidth = 0.005, size=.2)+
+  theme_minimal()
+
+
+g5<-ggplot(dat_filtered, aes(x=margin,y=cand10))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Female Candidates 10 Closest")+
+  stat_summary_bin(binwidth = 0.005, size=.2)+
+  theme_minimal()
+
+g6<-ggplot(dat_filtered, aes(x=margin,y=win75))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Female Win 75 miles")+
+  stat_summary_bin(binwidth = 0.005, size=.2)+
+  theme_minimal()
+
+
+g7<-ggplot(dat_filtered, aes(x=margin,y=win10))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Female Win 10 Closest")+
+  stat_summary_bin(binwidth = 0.005, size=.2)+
+  theme_minimal()
+
+gridExtra::  grid.arrange(g4,g6,g5,g7,nrow=2)
+
+```
+
+
+
 
 
 # Going Beyond {.tabset .tabsetfade}
