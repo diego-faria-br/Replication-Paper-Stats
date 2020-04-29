@@ -11,7 +11,7 @@ output:
     theme: journal
     toc: yes
     toc_float:
-      collapsed: no
+      collapsed: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -34,10 +34,13 @@ library(gtable)
 # library(estimatr)
 rm(list = ls())
 dat<-read.dta("./Data/main data.dta")
+dat <- dat %>% rename(nextyear=femaleonballotnextyear,
+                      margin=femalecand_margin_of_victory,
+                      turnout=femaleturnout_nextcycle, electorate=female_percentageofelectorate_ne,cand10=femcands_over_contests_next_10r,cand75=femcands_over_contests_next_75m,win10=femwins_over_contests_next_10r,win75=femwins_over_contests_next_75m)
 
 ```
 
-# Summary {.tabset .tabsetfade}
+# Summary
 
 ## Women in Politics
 
@@ -89,7 +92,7 @@ Although, further analysis must and will be made in this replication to check th
 
 Statistically there was no discernible effect. Election of additional woman had no effect on the women's political participation or . Results in contrast with a number of findings from India. Although ellecting the first woman may have an impact, other barriers may be too strong to erode by simply ellecting more women.
 
-# Analysis {.tabset .tabsetfade}
+# Analysis
 
 ## Candidacy, voting and representativity
 
@@ -110,12 +113,8 @@ $\small \frac{\sum{Female \: Voters_i}}{\sum{Voters_i}} = \alpha+\beta_1V_i+\bet
 ### Replication - Table 1
 
 
-```{r Table1,warning=FALSE,cache=TRUE,echo=TRUE,warning=FALSE,results='asis', warning=FALSE}
+```{r Table1,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
 
-
-dat <- dat %>% rename(nextyear=femaleonballotnextyear,
-                      margin=femalecand_margin_of_victory,
-                      turnout=femaleturnout_nextcycle, electorate=female_percentageofelectorate_ne)
 bw<-.15
 
 dat_filtered <- dat %>% filter(margin<=bw & margin>=-bw) 
@@ -178,26 +177,21 @@ stargazer(reg1,reg2,reg3,type = "html",title="Table 1 - Replication",
 
 ### Replication - Graphics
 
-```{r graphics, hold=TRUE}
+```{r Graphics, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE}
 
 g1<-ggplot(dat_filtered, aes(x=margin,y=nextyear))+
-  #   geom_line(aes(y=reg1),data = dat_filtered[dat_filtered$margin >= 0,], 
-  #           color = "#00BFC4", 
-  #           size = 1) +
-  # geom_line(aes(y=reg1),data = dat_filtered[dat_filtered$margin <= 0,], 
-  #           color = "#F8766D", 
-  #           size = 1)+
-  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
                          color = "#F8766D", 
                          size = 1, se=TRUE) +
   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  # geom_line(aes(y=reg1),data = dat_filtered[dat_filtered$margin <= 0,], 
-  #           color = "#F8766D", 
-  #           size = 1)+
-    stat_summary_bin(binwidth = 0.005)
+  xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Women on Ballot Next Year in the Same District - Election 2")+
+  stat_summary_bin(binwidth = 0.005, size=.2)+
+  theme_minimal()
+  
 
 g2<-ggplot(dat_filtered, aes(x=margin,y=turnout))+
   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
@@ -207,7 +201,10 @@ g2<-ggplot(dat_filtered, aes(x=margin,y=turnout))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  stat_summary_bin(binwidth = 0.005, size=0.2)
+  stat_summary_bin(binwidth = 0.005, size=0.2)+
+  xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Female Voter Turnout - Election 2")+
+  theme_minimal()
 
 g3<-ggplot(dat_filtered, aes(x=margin,y=electorate))+
   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
@@ -217,13 +214,16 @@ g3<-ggplot(dat_filtered, aes(x=margin,y=electorate))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  stat_summary_bin(binwidth = 0.005, size=0.2)
+  stat_summary_bin(binwidth = 0.005, size=0.2)+
+  xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Female Percentage of Electorate - Election 2")+
+  theme_minimal()
 
 
 
 
 
-gridExtra::  grid.arrange(g1,g2,g3,nrow=3)
+gridExtra::  grid.arrange(g2,g3,g1,nrow=3)
 
 
 ```
@@ -231,6 +231,77 @@ gridExtra::  grid.arrange(g1,g2,g3,nrow=3)
 
 
 ## Breaking the Glass
+
+```{r Table2,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}}
+
+datcand10 <- dat_filtered %>% dplyr:: select(nextyear,margin,cand10)
+datcand75 <- dat_filtered %>% dplyr:: select(margin,womanwon,cand75)
+datwin10 <- dat_filtered %>% dplyr:: select(margin,womanwon,win10)
+datwin75 <- dat_filtered %>% dplyr:: select(margin,womanwon,win75)
+
+# ========================= Table 2- Column 1===========================================
+
+regcand75 <-lm(cand75~margin+I(margin^2)+
+           I(margin^3)+I(margin^4)+
+           margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
+           I(margin^4)*womanwon+womanwon,dat_filtered)
+
+# Robust standard error estimate 
+
+covc75 <- vcovHC(regcand75, type = "HC1") 
+robust.cand75 <- sqrt(diag(covc75))
+
+# ================ Table 2- Column 2====================================================
+
+regcand10 <-lm(cand10~margin+I(margin^2)+
+           I(margin^3)+I(margin^4)+
+           margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
+           I(margin^4)*womanwon+womanwon,dat_filtered)
+
+# Robust standard error estimate 
+
+covc10 <- vcovHC(regcand10, type = "HC1") 
+robust.cand10 <- sqrt(diag(covc10))
+
+# ================ Table 2- Column 3====================================================
+
+regwin75 <-lm(win75~margin+I(margin^2)+
+           I(margin^3)+I(margin^4)+
+           margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
+           I(margin^4)*womanwon+womanwon,dat_filtered)
+
+# Robust standard error estimate 
+
+covw75 <- vcovHC(regwin75, type = "HC1") 
+robust.win75 <- sqrt(diag(covw75))
+
+
+# ================ Table 2- Column 4====================================================
+
+regwin10 <-lm(win10~margin+I(margin^2)+
+           I(margin^3)+I(margin^4)+
+           margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
+           I(margin^4)*womanwon+womanwon,dat_filtered)
+
+# Robust standard error estimate 
+
+covw10 <- vcovHC(regwin10, type = "HC1") 
+robust.win10 <- sqrt(diag(covw10))
+
+# ================ Table 2 - Replication ==========================================================
+
+stargazer(regcand75,regcand10,regwin75,regwin10,type = "html",title="Table 2 - Replication",
+          keep.stat=c("n","rsq","bic"), 
+          se=list(robust.cand75,robust.cand10,robust.win75,robust.win10),
+          covariate.labels = c("Woman Won","Constant"),
+          omit = c(":","I(margin2)","I(margin3)","I(margin4)","margin"),  
+          column.labels=c("Fem. Candidates per Contest 	&nbsp;&nbsp;","Fem. Victories per Contest"),
+          column.separate = c(2,2),
+          align=TRUE,dep.var.labels=c("","",""),notes.append = FALSE,notes = c("<sup>&sstarf;</sup>p<0.1;<sup>&sstarf;&sstarf;</sup>p<0.05;<sup>&sstarf;&sstarf;&sstarf;</sup>p<0.01"))
+
+
+```
+
 
 # Going Beyond {.tabset .tabsetfade}
 
