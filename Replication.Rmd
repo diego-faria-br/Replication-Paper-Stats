@@ -4,20 +4,44 @@ subtitle: "Do female politicians empower women to vote or run for ofﬁce? A reg
 author: "Diego Oliveira Faria"
 date: "26/04/2020"
 output: 
-  html_document:
-    theme: journal
+  html_document: 
+    fig_width: 5
     highlight: pygments
+    number_sections: yes
+    theme: journal
     toc: yes
-
+    toc_float:
+      collapsed: no
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# library(robustbase)
+library(foreign)
+library(tidyr)
+library(car)
+library(ggplot2)
+# library(rdd)
+library(dplyr)
+library(stargazer)
+# library(rdrobust)
+# library(jtools)
+# library(kableExtra)
+# library(MASS)
+library(sandwich)
+library(lmtest)
+library(gtable)
+# library(estimatr)
+rm(list = ls())
+dat<-read.dta("./Data/main data.dta")
+
 ```
 
 # Summary {.tabset .tabsetfade}
 
 ## Women in Politics
+
+This replication is base on the paper **Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach** by *David E. Broockman* from the Department of Political Science, University of California, Berkeley. The goal of the paper is to test the hyphotesis that increase in women representation ellected officials has a positive effect on female participation in politics both in  mass and elite levels.
 
 Gender gap in politics is a pressing issue in many countries, both in terms of mass and elite participation. Participation in the mass level means casting, participation in the elite level means occupying positions as ellected officials. Such a phenomena have called attention from many scholars. 
 
@@ -26,18 +50,185 @@ The question to be answerered in this paper is wheter the presence of women as c
 Previous works suggests that elections of women has a positive impact on both women's political participation and presence in office.
 
 
+
+
 ## Data
 
+* Female Candidates
+  - Information about all elections that women candidated for state legislature since 1999. Made available by Center on American Women and Politics (CAWP).
+  - The data was treated and only elections with a woman opposing a man remained. Resulting in a dataset with 3,813 state legislative elections where a woman opposed a man in 2002, 2004, 2006 and 2008.
+
+* Election returns
+  - State legislative returns gathered from state legislative websites. There results were matched with the information of women opposiing men.
+
+* Depentend variable I: women’s candidacies in nearby
+districts
+  - Information about districts were obtained from the US Census and then matched to the election return and CAWP. The US Census yielded the  geographic location and boundaries of state legislative districts. These geographic boundary ﬁles allowed the author to identify other districts ‘nearby’ each of the 3813 main districts and thus where elites and potential female candidates might learn of women’s electoral victories and ultimately witness women serving in ofﬁce.
+  
+* Depentend variable II: women's voter turnout
+  - Information purchased from Catalist, well-known voter data clearinghouse. The dataset yield the number of votes cast in the general election and the number of votes cast by women in every even-numbered election year between 2000 and 2010 from their comprehensive US voter ﬁles. This dataset yielded two variables of
+interest in each election: dividing the number of votes
+women cast by the total number of votes yields the share of
+the electorate which women comprised, and dividing the
+number of votes cast by women by the female population
+yields women’s voter turnout.
+
+
 ## Empirical Strategy
+
+The strategy used by the author was sharp regression descontinuity design (sharp RDD). The forcing variable was the margin of votes, rescaled around 50% of the sharing of votes received. Positive values of the rescaled variable means that a women won the election, negative values of margin, means that the man won the election.
+
+The design seems to fit well to this type of problem. It is plausible the assumption that the average potential outcomes are equal around the discontinuity, it means that other covariates that could affect the outcomes don't change abruptly in the threshold. So, the change in the outcomes of the dependet variable would be a result only of the change in the state of the forcing variable.
+
+Although, further analysis must and will be made in this replication to check the robustness of the assumptions and of the results.
+
+
+
 
 ## Findings
 
 Statistically there was no discernible effect. Election of additional woman had no effect on the women's political participation or . Results in contrast with a number of findings from India. Although ellecting the first woman may have an impact, other barriers may be too strong to erode by simply ellecting more women.
 
-
 # Analysis {.tabset .tabsetfade}
 
 ## Candidacy, voting and representativity
+
+### Regression for Women on Ballot
+
+$\small Woman \: on \: Ballot_{next \: elec.} = \alpha+\beta_1V_i+\beta_2V_i^2 +\beta_3V_i^3 +\beta_4V_i^4 +\gamma F_i +\beta_5V_i+\beta_6V_i^2 +\beta_7V_i^3 +\beta_8V_i^4 +\epsilon_i$
+
+
+### Regression for Turnout among Women in the Next Election
+
+$\small \frac{\sum{Female \: Voters_i}}{\sum{Women_i}} = \alpha+\beta_1V_i+\beta_2V_i^2 +\beta_3V_i^3 +\beta_4V_i^4 +\gamma F_i +\beta_5V_i+\beta_6V_i^2 +\beta_7V_i^3 +\beta_8V_i^4 +\epsilon_i$
+
+### Regression for Turnout of Women Relative to Total Electorate
+
+$\small \frac{\sum{Female \: Voters_i}}{\sum{Voters_i}} = \alpha+\beta_1V_i+\beta_2V_i^2 +\beta_3V_i^3 +\beta_4V_i^4 +\gamma F_i +\beta_5V_i+\beta_6V_i^2 +\beta_7V_i^3 +\beta_8V_i^4 +\epsilon_i$
+
+
+### Replication - Table 1
+
+
+```{r Table1,warning=FALSE,cache=TRUE,echo=TRUE,warning=FALSE,results='asis', warning=FALSE}
+
+
+dat <- dat %>% rename(nextyear=femaleonballotnextyear,
+                      margin=femalecand_margin_of_victory,
+                      turnout=femaleturnout_nextcycle, electorate=female_percentageofelectorate_ne)
+bw<-.15
+
+dat_filtered <- dat %>% filter(margin<=bw & margin>=-bw) 
+
+datm <- dat_filtered %>% dplyr:: select(nextyear,margin,womanwon)
+datt <- dat_filtered %>% dplyr:: select(margin,womanwon,turnout)
+date <- dat_filtered %>% dplyr:: select(margin,womanwon,electorate)
+
+
+# ================ Column 1 Table 1====================================================
+
+reg1<-lm(nextyear~margin+I(margin^2)+
+           I(margin^3)+I(margin^4)+
+           margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
+           I(margin^4)*womanwon+womanwon,dat_filtered)
+
+# Robust standard error estimate 
+
+cov1 <- vcovHC(reg1, type = "HC1") 
+robust.se1 <- sqrt(diag(cov1))
+
+# ================ Column 2 Table 1====================================================
+
+# Linear regression for the 2nd column
+reg2<-lm(turnout~margin+I(margin^2)+
+           I(margin^3)+I(margin^4)+
+           margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
+           I(margin^4)*womanwon+womanwon,dat_filtered)
+
+# Robust standard error estimate
+cov2 <- vcovHC(reg2, type = "HC1")
+robust.se2 <- sqrt(diag(cov2))
+
+# ================ Column 3 Table 1====================================================
+
+# Linear regression for the 3nd column
+
+reg3<-lm(electorate~margin+I(margin^2)+
+           I(margin^3)+I(margin^4)+
+           margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
+           I(margin^4)*womanwon+womanwon,dat_filtered)
+
+# Robust standard error estimate
+
+cov3 <- vcovHC(reg3, type = "HC1")
+robust.se3 <- sqrt(diag(cov3))
+
+# ===========================Table 1-Replication========================================
+
+stargazer(reg1,reg2,reg3,type = "html",title="Table 1 - Replication",
+          keep.stat=c("n","rsq","bic"), 
+          se=list(robust.se1,robust.se2,robust.se3),
+          covariate.labels = c("Woman Won","Constant"),
+          omit = c(":","I(margin2)","I(margin3)","I(margin4)","margin"),  
+          column.labels=c("Woman on Ballot 	&nbsp;&nbsp;","Women's Voter Turnout 	&nbsp; &nbsp;","Fem. Share of Elect."), 
+          align=TRUE,dep.var.labels=c("","",""),notes.append = FALSE,notes = c("<sup>&sstarf;</sup>p<0.1;<sup>&sstarf;&sstarf;</sup>p<0.05;<sup>&sstarf;&sstarf;&sstarf;</sup>p<0.01"))
+
+```
+
+
+### Replication - Graphics
+
+```{r graphics, hold=TRUE}
+
+g1<-ggplot(dat_filtered, aes(x=margin,y=nextyear))+
+  #   geom_line(aes(y=reg1),data = dat_filtered[dat_filtered$margin >= 0,], 
+  #           color = "#00BFC4", 
+  #           size = 1) +
+  # geom_line(aes(y=reg1),data = dat_filtered[dat_filtered$margin <= 0,], 
+  #           color = "#F8766D", 
+  #           size = 1)+
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  # geom_line(aes(y=reg1),data = dat_filtered[dat_filtered$margin <= 0,], 
+  #           color = "#F8766D", 
+  #           size = 1)+
+    stat_summary_bin(binwidth = 0.005)
+
+g2<-ggplot(dat_filtered, aes(x=margin,y=turnout))+
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+              color = "#F8766D", 
+              size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  stat_summary_bin(binwidth = 0.005, size=0.2)
+
+g3<-ggplot(dat_filtered, aes(x=margin,y=electorate))+
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+              color = "#F8766D", 
+              size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  stat_summary_bin(binwidth = 0.005, size=0.2)
+
+
+
+
+
+gridExtra::  grid.arrange(g1,g2,g3,nrow=3)
+
+
+```
+
+
 
 ## Breaking the Glass
 

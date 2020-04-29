@@ -1,32 +1,32 @@
-library(robustbase)
+# library(robustbase)
 library(foreign)
 library(tidyr)
 library(car)
 library(ggplot2)
-library(rdd)
+# library(rdd)
 library(dplyr)
 library(stargazer)
-library(rdrobust)
-library(jtools)
-library(kableExtra)
-library(MASS)
+# library(rdrobust)
+# library(jtools)
+# library(kableExtra)
+# library(MASS)
 library(sandwich)
 library(lmtest)
-library(estimatr)
+# library(estimatr)
 
 rm(list = ls())
 dat<-read.dta("./Data/main data.dta")
 dat <- dat %>% rename(nextyear=femaleonballotnextyear,
                       margin=femalecand_margin_of_victory,
-                      turnout=femaleturnout_nextcycle, electorate=female_percentageofelectorate_th)
+                      turnout=femaleturnout_nextcycle, electorate=female_percentageofelectorate_ne)
 bw<-.15
 
 dat_filtered <- dat %>% filter(margin<=bw & margin>=-bw) 
 # dat_filtered <- dat_filtered %>% select(nextyear,margin,womanwon,turnout,electorate,winXfem_v_c_p_4)%>% select(nextyear,womanwon,electorate) %>% na.omit()
 
-datm <- dat_filtered %>% select(nextyear,margin,womanwon)
-datt <- dat_filtered %>% select(margin,womanwon,turnout)
-date <- dat_filtered %>%select(margin,womanwon,electorate)
+datm <- dat_filtered %>% dplyr:: select(nextyear,margin,womanwon)
+datt <- dat_filtered %>% dplyr:: select(margin,womanwon,turnout)
+date <- dat_filtered %>% dplyr:: select(margin,womanwon,electorate)
 
 
 # ================ Column 1 Table 1====================================================
@@ -43,7 +43,7 @@ reg1<-lm(nextyear~margin+I(margin^2)+
 
 #https://cran.r-project.org/web/packages/stargazer/vignettes/stargazer.pdf robust estimation of std. errors
 
-cov1 <- vcovHC(regm, type = "HC1")
+cov1 <- vcovHC(reg1, type = "HC1")
 robust.se1 <- sqrt(diag(cov1))
 
 # regm<-lm(nextyear~womanwon+margin+fem_v_c_p_2+

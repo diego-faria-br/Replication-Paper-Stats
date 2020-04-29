@@ -1,0 +1,12 @@
+base
+foreign
+tidyr
+carData
+car
+ggplot2
+dplyr
+stargazer
+sandwich
+zoo
+lmtest
+gtable
