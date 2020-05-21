@@ -3,16 +3,17 @@ title: "Statistics II: Statistical Modeling & Causal Inference"
 subtitle: "Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach"
 author: "Diego Oliveira Faria"
 date: "26/04/2020"
-output: 
+bibliography: bibliography.bib
+output:
   html_document: 
     fig_caption: yes
     fig_width: 5
     highlight: pygments
     number_sections: yes
     theme: journal
-    toc: yes
-    toc_float:
-      collapsed: yes
+    toc: yes 
+    toc_float: yes
+    
 ---
 
 ```{r setup, include=FALSE}
@@ -45,18 +46,18 @@ dat <- dat %>% rename(nextyear=femaleonballotnextyear,
 
 ## Women in Politics
 
-This replication is base on the paper **Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach** by *David E. Broockman* from the Department of Political Science, University of California, Berkeley. The goal of the paper is to test the hyphotesis that increase in women representation ellected officials has a positive effect on female participation in politics both in  mass and elite levels.
+This work presents the replication of the results from the paper **Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach** by *David E. Broockman* from the Department of Political Science, University of California, Berkeley. The goal of the paper was to test the hyphotesis that an increase in women representation as ellected officials has a positive effect on female participation in politics both in  mass and elite levels.
 
-Gender gap in politics is a pressing issue in many countries, both in terms of mass and elite participation. Participation in the mass level means casting, participation in the elite level means occupying positions as ellected officials. Such a phenomena have called attention from many scholars. 
+Gender gap in politics is a pressing issue in many countries, both in terms of mass and elite participation. Participation in the mass level means casting, participation in the elite level means occupying positions as ellected officials. Such a phenomena has called attention from many scholars. And some relevant results confirmed the hypothesis for specific realities, such as in India [@dein] 
 
-The question to be answerered in this paper is wheter the presence of women as canditate or as officeholders help to close the gender-gap of participation in the government by making them women to run and vote more?
+The question to be answerered by the paper was wheter the presence of women as canditate or as officeholders help to close the gender-gap of participation in the government by making them women to run and vote more?
 
 Previous works suggests that elections of women has a positive impact on both women's political participation and presence in office.
 
 
-
-
 ## Data
+
+The data is available for replication at [@rep].
 
 * Female Candidates
   - Information about all elections that women candidated for state legislature since 1999. Made available by Center on American Women and Politics (CAWP).
@@ -188,9 +189,12 @@ g1<-ggplot(dat_filtered, aes(x=margin,y=nextyear))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  xlab("Female Margin of Victory - Election 1")+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Women on Ballot Next Year in the Same District - Election 2")+
-  stat_summary_bin(binwidth = 0.005, size=.2)+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
   theme_minimal()
   
 
@@ -202,8 +206,11 @@ g2<-ggplot(dat_filtered, aes(x=margin,y=turnout))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  stat_summary_bin(binwidth = 0.005, size=0.2)+
-  xlab("Female Margin of Victory - Election 1")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Voter Turnout - Election 2")+
   theme_minimal()
 
@@ -215,8 +222,11 @@ g3<-ggplot(dat_filtered, aes(x=margin,y=electorate))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  stat_summary_bin(binwidth = 0.005, size=0.2)+
-  xlab("Female Margin of Victory - Election 1")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Percentage of Electorate - Election 2")+
   theme_minimal()
 
@@ -314,9 +324,12 @@ g4<-ggplot(dat_filtered, aes(x=margin,y=cand75))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  xlab("Female Margin of Victory - Election 1")+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Candidates 75 miles")+
-  stat_summary_bin(binwidth = 0.005, size=.2)+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
   theme_minimal()
 
 
@@ -328,9 +341,13 @@ g5<-ggplot(dat_filtered, aes(x=margin,y=cand10))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  xlab("Female Margin of Victory - Election 1")+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+  # xlab("Female Margin of Victory - Election 1")+
   ggtitle("Female Candidates 10 Closest")+
-  stat_summary_bin(binwidth = 0.005, size=.2)+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
   theme_minimal()
 
 g6<-ggplot(dat_filtered, aes(x=margin,y=win75))+
@@ -341,9 +358,12 @@ g6<-ggplot(dat_filtered, aes(x=margin,y=win75))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  xlab("Female Margin of Victory - Election 1")+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Win 75 miles")+
-  stat_summary_bin(binwidth = 0.005, size=.2)+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
   theme_minimal()
 
 
@@ -355,9 +375,12 @@ g7<-ggplot(dat_filtered, aes(x=margin,y=win10))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  xlab("Female Margin of Victory - Election 1")+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Win 10 Closest")+
-  stat_summary_bin(binwidth = 0.005, size=.2)+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
   theme_minimal()
 
 gridExtra::  grid.arrange(g4,g6,g5,g7,nrow=2)
@@ -370,20 +393,7 @@ gridExtra::  grid.arrange(g4,g6,g5,g7,nrow=2)
 
 # Going Beyond {.tabset .tabsetfade}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Partisanship as a Moderator of the Effect
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+According to a reserach carried out by the Pew Research Center, from Whashgton DC. Democrats and Republicans have different views about gender gaps
 
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -69,7 +69,9 @@ robust.se2 <- sqrt(diag(cov2))
 # c2 <- coeftest(reg2,vcov=vcovHC(reg2,"HC1"))
 # sjstats::robust(reg2)[6,]
 
-
+tt <-qt(c(0.025,0.975),summary(reg2)$df[2])
+se <- sqrt(diag(cov2))
+ci <-coef(reg2) + se %o% tt
 
 
 
@@ -92,6 +94,18 @@ robust.se3 <- sqrt(diag(cov3))
 stargazer(reg1,reg2,reg3,type = "text",
           keep.stat=c("n","rsq"), 
           se=list(robust.se1,robust.se2,robust.se3),
+          covariate.labels = c("Woman Won","Constant"),
+          # keep=c("womanwon","Constant"),
+          omit = c(":","I(margin2)","I(margin3)","I(margin4)","margin"),  
+          column.labels=c("Woman on Ballot","Women's Voter Turnout","Female Share of Electorate"), 
+          align=TRUE,dep.var.labels=c("","",""))
+
+
+
+stargazer(reg1,reg2,reg3,type = "text",
+          keep.stat=c("n","rsq"), 
+          # se=list(robust.se1,robust.se2,robust.se3),
+          ci=TRUE,
           covariate.labels = c("Woman Won","Constant"),
           # keep=c("womanwon","Constant"),
           omit = c(":","I(margin2)","I(margin3)","I(margin4)","margin"),  
