@@ -1,0 +1,54 @@
+
+% Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: qui, mai 21, 2020 - 12:35:49
+\begin{table}[!htbp] \centering 
+  \caption{} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & nextyear \\ 
+\hline \\[-1.8ex] 
+ margin & $-$1.207 \\ 
+  & (5.055) \\ 
+  & \\ 
+ I(margin$\hat{\mkern6mu}$2) & $-$62.987 \\ 
+  & (139.674) \\ 
+  & \\ 
+ I(margin$\hat{\mkern6mu}$3) & $-$534.192 \\ 
+  & (1,418.896) \\ 
+  & \\ 
+ I(margin$\hat{\mkern6mu}$4) & $-$1,455.419 \\ 
+  & (4,745.366) \\ 
+  & \\ 
+ womanwon & 0.431$^{***}$ \\ 
+  & (0.076) \\ 
+  & \\ 
+ margin:womanwon & 0.537 \\ 
+  & (7.316) \\ 
+  & \\ 
+ I(margin$\hat{\mkern6mu}$2):womanwon & 80.926 \\ 
+  & (202.254) \\ 
+  & \\ 
+ I(margin$\hat{\mkern6mu}$3):womanwon & 315.867 \\ 
+  & (2,047.906) \\ 
+  & \\ 
+ I(margin$\hat{\mkern6mu}$4):womanwon & 2,188.614 \\ 
+  & (6,820.988) \\ 
+  & \\ 
+ Constant & 0.451$^{***}$ \\ 
+  & (0.053) \\ 
+  & \\ 
+\hline \\[-1.8ex] 
+Observations & 2,588 \\ 
+R$^{2}$ & 0.248 \\ 
+Adjusted R$^{2}$ & 0.246 \\ 
+Residual Std. Error & 0.424 (df = 2578) \\ 
+F Statistic & 94.586$^{***}$ (df = 9; 2578) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 

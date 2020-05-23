@@ -7,13 +7,13 @@ bibliography: bibliography.bib
 output:
   html_document: 
     fig_caption: yes
-    fig_width: 5
+    fig_width: 6
     highlight: pygments
     number_sections: yes
     theme: journal
-    toc: yes 
-    toc_float: yes
-    
+    toc: yes
+    toc_float:
+      collapsed: no
 ---
 
 ```{r setup, include=FALSE}
@@ -26,7 +26,7 @@ library(ggplot2)
 # library(rdd)
 library(dplyr)
 library(stargazer)
-# library(rdrobust)
+library(rdrobust)
 # library(jtools)
 # library(kableExtra)
 # library(MASS)
@@ -44,72 +44,73 @@ dat <- dat %>% rename(nextyear=femaleonballotnextyear,
 
 # Summary
 
+<center>
+<img src= "https://media.giphy.com/media/RkDLG7P2g11WeoVYHN/giphy.gif" alt="soda_size" width="450"/></center>
+<br>
+<br>
+<br>
+
 ## Women in Politics
 
-This work presents the replication of the results from the paper **Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach** by *David E. Broockman* from the Department of Political Science, University of California, Berkeley. The goal of the paper was to test the hyphotesis that an increase in women representation as ellected officials has a positive effect on female participation in politics both in  mass and elite levels.
+This work presents the replication of the results from the paper **Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach** by *David E. Broockman* from the Department of Political Science, University of California, Berkeley. The paper's goal was to test the hypothesis that an increase in women's representation as elected officials has a positive effect on female participation in politics both in mass and elite levels.
 
-Gender gap in politics is a pressing issue in many countries, both in terms of mass and elite participation. Participation in the mass level means casting, participation in the elite level means occupying positions as ellected officials. Such a phenomena has called attention from many scholars. And some relevant results confirmed the hypothesis for specific realities, such as in India [@dein] 
+The gender gap in politics is a pressing issue in many countries, both in terms of mass and elite participation. Participation in the mass level means casting; participation in the elite level means occupying positions as elected officials. Such a phenomenon has called the attention of many scholars. And some relevant results confirmed the hypothesis for specific realities, such as in India [@dein]
 
-The question to be answerered by the paper was wheter the presence of women as canditate or as officeholders help to close the gender-gap of participation in the government by making them women to run and vote more?
+The question to be answered was whether the presence of women as a candidate or as officeholders do reduce the gender gap of political participation in the government by making more women race for elected posts or vote?
+Previous works suggest a positive impact of women's elections on both women's political participation and presence in the office.
 
-Previous works suggests that elections of women has a positive impact on both women's political participation and presence in office.
 
 
 ## Data
 
 The data is available for replication at [@rep].
 
-* Female Candidates
-  - Information about all elections that women candidated for state legislature since 1999. Made available by Center on American Women and Politics (CAWP).
-  - The data was treated and only elections with a woman opposing a man remained. Resulting in a dataset with 3,813 state legislative elections where a woman opposed a man in 2002, 2004, 2006 and 2008.
+* **Female Candidates** <br>
+  This dataset has information about all elections that women ran for state legislature since 1999. It was made available by the Center on American Women and Politics (CAWP). The author treated it, and only elections with a woman opposing a man remained. That resulted in a dataset with 3,813 state legislative elections where a woman opposed a man in 2002, 2004, 2006, and 2008.
 
-* Election returns
-  - State legislative returns gathered from state legislative websites. There results were matched with the information of women opposiing men.
+* **Election returns** <br>
+  The author gathered State legislative returns from state legislative websites. Then, he matched this information with the information of women opposing men.
 
-* Depentend variable I: women’s candidacies in nearby
-districts
-  - Information about districts were obtained from the US Census and then matched to the election return and CAWP. The US Census yielded the  geographic location and boundaries of state legislative districts. These geographic boundary ﬁles allowed the author to identify other districts ‘nearby’ each of the 3813 main districts and thus where elites and potential female candidates might learn of women’s electoral victories and ultimately witness women serving in ofﬁce.
+
+* **Dependent variable I: women’s candidacies in nearby** <br>
+  The information about districts was obtained from the US Census and then matched to the election return and CAWP. The US Census yielded the geographic location and boundaries of state legislative districts. These geographic boundary ﬁles allowed the author to identify other districts' nearby' each of the 3813 main districts and thus where elites and potential female candidates might learn of women's electoral victories and ultimately witness women serving in ofﬁce.
+
   
-* Depentend variable II: women's voter turnout
-  - Information purchased from Catalist, well-known voter data clearinghouse. The dataset yield the number of votes cast in the general election and the number of votes cast by women in every even-numbered election year between 2000 and 2010 from their comprehensive US voter ﬁles. This dataset yielded two variables of
-interest in each election: dividing the number of votes
-women cast by the total number of votes yields the share of
-the electorate which women comprised, and dividing the
-number of votes cast by women by the female population
-yields women’s voter turnout.
+* **Dependent variable II: women's voter turnout** <br>
+  Information purchased from a well-known voter data clearinghouse. The dataset yield the number of votes cast in the general election and the number of votes cast by women in every even-numbered election year between 2000 and 2010 from their comprehensive US voter ﬁles. This dataset yielded two variables of interest in each election:  the share of the electorate which women comprised, and the women's voter turnout.
 
 
 ## Empirical Strategy
 
-The strategy used by the author was sharp regression descontinuity design (sharp RDD). The forcing variable was the margin of votes, rescaled around 50% of the sharing of votes received. Positive values of the rescaled variable means that a women won the election, negative values of margin, means that the man won the election.
+The strategy used by the author was a sharp regression discontinuity design (sharp RDD). The forcing variable was the female margin of votes, rescaled around 50% of votes received. The rescaled variable's positive values mean that the woman won the election; negative values of margin mean that the man won the election.
 
-The design seems to fit well to this type of problem. It is plausible the assumption that the average potential outcomes are equal around the discontinuity, it means that other covariates that could affect the outcomes don't change abruptly in the threshold. So, the change in the outcomes of the dependet variable would be a result only of the change in the state of the forcing variable.
+The main results were obtained by specifying a 4 th order polynomial on each side of the decontinuity in the form:
 
-Although, further analysis must and will be made in this replication to check the robustness of the assumptions and of the results.
+**$\small Dependent \: Variable= \alpha+\beta_1V_i+\beta_2V_i^2 +\beta_3V_i^3 +\beta_4V_i^4 +\gamma F_i +\beta_5V_i+\beta_6V_i^2 +\beta_7V_i^3 +\beta_8V_i^4 +\epsilon_i$**
 
 
+
+Where $V$ stands for the female margin of votes, and $F$ is the dummy variable that shows whether the woman won or not.
+
+
+The equation applies to each one of the dependent variables. A local linear regression model was also employed, but the results appear only in the appendix of the paper, so we do not replicate it here.
+
+
+The design seems to fit well with this type of problem. It is plausible the assumption that the average potential outcomes are equal around the discontinuity; it means that other covariates that could affect the outcomes don't change abruptly in the threshold. Consequently, the change in the dependent variable's outcomes would be a result only of the change in the state of the forcing variable. Although, further analysis must and made in this replication to check the robustness of this assumption.
 
 
 ## Findings
 
-Statistically there was no discernible effect. Election of additional woman had no effect on the women's political participation or . Results in contrast with a number of findings from India. Although ellecting the first woman may have an impact, other barriers may be too strong to erode by simply ellecting more women.
+Statistically, there was no discernible effect. The election of an additional woman did not affect women's political participation—results in contrast with findings from India. Although electing the first woman may have an impact, other barriers may be too strong to erode by merely electing more women.
+
+
+
 
 # Analysis
 
-## Candidacy, voting and representativity
+## Does electing women empower other women to vote?
 
-### Regression for Women on Ballot
-
-$\small Woman \: on \: Ballot_{next \: elec.} = \alpha+\beta_1V_i+\beta_2V_i^2 +\beta_3V_i^3 +\beta_4V_i^4 +\gamma F_i +\beta_5V_i+\beta_6V_i^2 +\beta_7V_i^3 +\beta_8V_i^4 +\epsilon_i$
-
-
-### Regression for Turnout among Women in the Next Election
-
-$\small \frac{\sum{Female \: Voters_i}}{\sum{Women_i}} = \alpha+\beta_1V_i+\beta_2V_i^2 +\beta_3V_i^3 +\beta_4V_i^4 +\gamma F_i +\beta_5V_i+\beta_6V_i^2 +\beta_7V_i^3 +\beta_8V_i^4 +\epsilon_i$
-
-### Regression for Turnout of Women Relative to Total Electorate
-
-$\small \frac{\sum{Female \: Voters_i}}{\sum{Voters_i}} = \alpha+\beta_1V_i+\beta_2V_i^2 +\beta_3V_i^3 +\beta_4V_i^4 +\gamma F_i +\beta_5V_i+\beta_6V_i^2 +\beta_7V_i^3 +\beta_8V_i^4 +\epsilon_i$
+The first result to be replicated are the effect of  women on ballot, women's turnout in the next election, and women's turnout elative to total electorate.
 
 
 ### Replication - Table 1
@@ -132,6 +133,7 @@ reg1<-lm(nextyear~margin+I(margin^2)+
            I(margin^3)+I(margin^4)+
            margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
            I(margin^4)*womanwon+womanwon,dat_filtered)
+
 
 # Robust standard error estimate 
 
@@ -171,31 +173,40 @@ stargazer(reg1,reg2,reg3,type = "html",title="Table 1 - Replication",
           se=list(robust.se1,robust.se2,robust.se3),
           covariate.labels = c("Woman Won","Constant"),
           omit = c(":","I(margin2)","I(margin3)","I(margin4)","margin"),  
-          column.labels=c("Woman on Ballot 	&nbsp;&nbsp;","Women's Voter Turnout 	&nbsp; &nbsp;","Fem. Share of Elect."), 
+          column.labels=c("Woman on Ballot 	&nbsp;&nbsp;","Women's Voter Turnout 	&nbsp;&nbsp;","Fem. Share of Elect."), 
           align=TRUE,dep.var.labels=c("","",""),notes.append = FALSE,notes = c("<sup>&sstarf;</sup>p<0.1;<sup>&sstarf;&sstarf;</sup>p<0.05;<sup>&sstarf;&sstarf;&sstarf;</sup>p<0.01"))
 
 ```
 
+<br>
+**The results are exactly the same obtained by the author.**
 
-### Replication - Graphics
+
+### Replication - Graph 1
+
+Some visualization improvements were made in the graphic, if compared to the paper. First, to colors were associated to points bellow and above the cutoff, the binned data are presentend by its mean, and confidence interval as a line. 
 
 ```{r Graphics 1, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE}
 
+dat_filtered$bin<- cut(dat_filtered$margin,breaks = seq(from = -0.15,to = 0.15,by=0.005),include.lowest = TRUE)
+
 g1<-ggplot(dat_filtered, aes(x=margin,y=nextyear))+
-    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
-                         color = "#F8766D", 
-                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+              color = "#F8766D", 
+              size = 1, se=TRUE) +
   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
-  ggtitle("Women on Ballot Next Year in the Same District - Election 2")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+  scale_x_continuous("Female Margin of Victory - Election 1", 
+                     breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+  ggtitle("Women on Ballot Next Year in the Same District - Election 2") 
+  
+  g1 <- g1+ stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin <= 0,],
                          color = "#F8766D")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+    stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin >= 0,],
                          color = "#00BFC4")+
-  theme_minimal()
+    theme_minimal()
   
 
 g2<-ggplot(dat_filtered, aes(x=margin,y=turnout))+
@@ -206,13 +217,16 @@ g2<-ggplot(dat_filtered, aes(x=margin,y=turnout))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
-                         color = "#F8766D")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+    scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+  ggtitle("Female Voter Turnout - Election 2")
+  
+  
+  g2 <- g2 + stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, 
+                              data = dat_filtered[dat_filtered$margin <= 0,],
+                              color = "#F8766D")+
+      stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin >= 0,], 
                          color = "#00BFC4")+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
-  ggtitle("Female Voter Turnout - Election 2")+
-  theme_minimal()
+    theme_minimal()
 
 g3<-ggplot(dat_filtered, aes(x=margin,y=electorate))+
   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
@@ -222,9 +236,9 @@ g3<-ggplot(dat_filtered, aes(x=margin,y=electorate))+
               color = "#00BFC4", 
               size = 1, se=TRUE)+
   geom_vline(xintercept = 0)+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin <= 0,], 
                          color = "#F8766D")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin >= 0,], 
                          color = "#00BFC4")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Percentage of Electorate - Election 2")+
@@ -241,7 +255,12 @@ gridExtra::  grid.arrange(g2,g3,g1,nrow=3)
 
 
 
-## Breaking the Glass
+## Do female politicians break glass ceilings for other women to run?
+
+In this part of the paper, the authors investigate possible spillover effects in districts close to where the elections occurred. 
+
+They examined two effects: women's candidacies and women's turnout. The results show the estimated impact for districts picked within 75 miles from the district where a female won or lost, and for the 10 closest districts criteria.
+
 
 ```{r Table2,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
 
@@ -326,9 +345,9 @@ g4<-ggplot(dat_filtered, aes(x=margin,y=cand75))+
   geom_vline(xintercept = 0)+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Candidates 75 miles")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin <= 0,], 
                          color = "#F8766D")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin >= 0,], 
                          color = "#00BFC4")+
   theme_minimal()
 
@@ -344,9 +363,9 @@ g5<-ggplot(dat_filtered, aes(x=margin,y=cand10))+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   # xlab("Female Margin of Victory - Election 1")+
   ggtitle("Female Candidates 10 Closest")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin <= 0,], 
                          color = "#F8766D")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin >= 0,], 
                          color = "#00BFC4")+
   theme_minimal()
 
@@ -360,9 +379,9 @@ g6<-ggplot(dat_filtered, aes(x=margin,y=win75))+
   geom_vline(xintercept = 0)+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Win 75 miles")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin <= 0,], 
                          color = "#F8766D")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin >= 0,], 
                          color = "#00BFC4")+
   theme_minimal()
 
@@ -377,9 +396,9 @@ g7<-ggplot(dat_filtered, aes(x=margin,y=win10))+
   geom_vline(xintercept = 0)+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Win 10 Closest")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin <= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin <= 0,], 
                          color = "#F8766D")+
-  stat_summary_bin(binwidth = 0.005, size=.2, data = dat_filtered[dat_filtered$margin >= 0,], 
+  stat_summary_bin(fun="mean",geom="point",binwidth = 0.005, size=1, data = dat_filtered[dat_filtered$margin >= 0,], 
                          color = "#00BFC4")+
   theme_minimal()
 
@@ -391,9 +410,77 @@ gridExtra::  grid.arrange(g4,g6,g5,g7,nrow=2)
 
 
 
-# Going Beyond {.tabset .tabsetfade}
+# Extension
 
-## Partisanship as a Moderator of the Effect
+## Falsification Checks
 
-According to a reserach carried out by the Pew Research Center, from Whashgton DC. Democrats and Republicans have different views about gender gaps
+To test the robustness of the results, we do some falsification checks that are no present in the paper. The first one is robustness to specification, testing a linear model with the same and with different slopes. Also, we check for any covariate sorting around the threshold, especially for party affiliation, which could indicate some discontinuity of covariates.
+
+###Sensitivity
+
+```{r Sensitivity,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
+
+
+# ================ Column 1 Table 1====================================================
+
+regl1 <- lm(nextyear~womanwon+margin+womanwon*margin,data = dat_filtered)
+
+# Robust standard error estimate 
+
+cov1 <- vcovHC(regl1, type = "HC1") 
+robust.sel1 <- sqrt(diag(cov1))
+
+# ================ Column 2 Table 1====================================================
+
+# Linear regression for the 2nd column
+regl2 <- lm(turnout~womanwon+margin+womanwon*margin,data = dat_filtered)
+
+# Robust standard error estimate
+covl2 <- vcovHC(regl2, type = "HC1")
+robust.sel2 <- sqrt(diag(covl2))
+
+# ================ Column 3 Table 1====================================================
+
+# Linear regression for the 3rd column
+
+regl3 <- lm(electorate~womanwon+margin+womanwon*margin,data = dat_filtered)
+
+# Robust standard error estimate
+
+covl3 <- vcovHC(regl3, type = "HC1")
+robust.sel3 <- sqrt(diag(covl3))
+
+# ===========================Table 1-Replication========================================
+
+stargazer(reg1, reg2,reg3,regl1,regl2,regl3,type = "html",title="Table 3 - Sensitivity",
+          keep.stat=c("n","rsq","bic"), 
+          se=list(robust.se1,robust.se2,robust.se3,robust.sel1,robust.sel2,robust.sel3),
+          covariate.labels = c("Woman Won","Constant"),
+          omit = c(":","I(margin2)","I(margin3)","I(margin4)","margin"),  
+          column.labels=c("Polynomial Model","Linear Model"),
+          column.separate = c(3,3),
+          align=TRUE,dep.var.labels=c("","",""),notes.append = FALSE,notes = c("<sup>&sstarf;</sup>p<0.1;<sup>&sstarf;&sstarf;</sup>p<0.05;<sup>&sstarf;&sstarf;&sstarf;</sup>p<0.01"))
+
+
+
+
+```
+
+
+
+
+
+
+
+According to a reserach carried out by the Pew Research Center, from Whashgton DC. Democrats and Republicans have different views about gender gaps. Some findinds are that:
+
+- Democrats are largely dissatisfied with the nation’s progress on this issue if compared to Republicans
+-Democrats are also much more likely than Republicans to say that men have easier lives
+than women these days
+
+
+So, the hyphotesis to be testest here is about partisanship being a moderator of the effects from the study. In order to test this hypothesis the elections were divided by  party afiliation of the candidate. The hypothesis is that electing a womand would have an higher impact on Republicans candidates, since the pre-conceptions about gender roles for this group would be challenged.
+
+Specfifically, what is tested is 
+
 
