@@ -5,7 +5,7 @@ author: "Diego Oliveira Faria"
 date: "25/05/2020"
 bibliography: bibliography.bib
 output:
-  html_document: 
+  html_document:
     code_folding: hide
     css: mycss.css
     fig_caption: yes
@@ -190,11 +190,11 @@ stargazer(reg1,reg2,reg3,type = "html",title="Table 1 - Replication",
 
 Some visualization improvements were made in the graphic if compared to the paper. First, I associated different colors for information bellow, and above the cutoff, I also binned data is by its mean, as a point,  and confidence interval, as a line. I judge this approach as more adequate since it clearly shows how the data varies within each bin.
 
-```{r Figure 3, error=FALSE, message=FALSE, warning=FALSE, hold=TRUE}
+```{r Graphics 1, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE}
 # 
 dat_filtered$bin<- cut(dat_filtered$margin,breaks = seq(from = -0.15,to = 0.15,by=0.005),ordered_result = TRUE)
  
-dat_g <- dat_filtered %>% group_by(bin) %>%summarise(mean_n = mean(nextyear,na.rm = T),mean_t = mean(turnout,na.rm = T),mean_e = mean(electorate,na.rm = T),c10 =mean(cand10,na.rm = T),c75 =mean(cand75,na.rm = T),w10 =mean(win10,na.rm = T),w75 =mean(win75,na.rm = T), n=n()) %>% mutate(x=seq(from=-0.1475,to=0.1475,by=0.005),won=ifelse(x>=0,1,0))
+dat_g <- dat_filtered %>% group_by(bin) %>%summarise(mean_n = mean(nextyear,na.rm = T),mean_t = mean(turnout,na.rm = T),mean_e = mean(electorate,na.rm = T),n=n()) %>% mutate(x=seq(from=-0.1475,to=0.1475,by=0.005),won=ifelse(x>=0,1,0))
 
 # summary(dat_filtered$nextyear)
 
@@ -209,48 +209,112 @@ g1<-ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_n,colour=factor(won),size=n), 
               # color = "#00BFC4", 
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Women on Ballot Next Year in the Same District - Election 2") +
-  theme(legend.position = "none",
-        axis.title.y=element_blank())
+  theme(legend.position = "none")
 
 
 
+
+# g1<-ggplot()+geom_point(data=dat_g,aes(x=x,y=mean,fill=factor(won),size=n), shape=21)+
+#    geom_smooth(aes(x=margin,y=nextyear,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+#               # color = "#F8766D", 
+#               size = 1, se=TRUE) +
+#   geom_smooth(aes(x=margin,y=nextyear,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+#               # color = "#00BFC4", 
+#               size = 1, se=TRUE) + 
+#   geom_vline(xintercept = 0)+
+#   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+#   ggtitle("Women on Ballot Next Year in the Same District - Election 2") 
+#  
+# 
+# 
+# g1<-ggplot(dat_filtered, aes(x=margin,y=nextyear))+
+#   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+#               color = "#F8766D", 
+#               size = 1, se=TRUE) +
+#   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+#               color = "#00BFC4", 
+#               size = 1, se=TRUE)+
+#   geom_vline(xintercept = 0)+
+#   scale_x_continuous("Female Margin of Victory - Election 1", 
+#                      breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+#   ggtitle("Women on Ballot Next Year in the Same District - Election 2") 
+#   
+#    g1 <- g1+ stat_summary_bin(binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin <= 0,],
+#                          color = "#F8766D")+
+#     stat_summary_bin(binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin >= 0,],
+#                          color = "#00BFC4")+
+#     theme_minimal()
 
 #============================== Graph 2 =========================================
 
+# g2<-ggplot(dat_filtered, aes(x=margin,y=turnout))+
+#   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+#               color = "#F8766D", 
+#               size = 1, se=TRUE) +
+#   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+#               color = "#00BFC4", 
+#               size = 1, se=TRUE)+
+#   geom_vline(xintercept = 0)+
+#     scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+#   ggtitle("Female Voter Turnout - Election 2")
+#   
+#   
+#   g2 <- g2 + stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, 
+#                               data = dat_filtered[dat_filtered$margin <= 0,],
+#                               color = "#F8766D")+
+#       stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin >= 0,], 
+#                          color = "#00BFC4")+
+#     theme_minimal()
 
-g2 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_t,colour=factor(won),size=n), shape=20)+
+g2 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_t,fill=factor(won),size=n), shape=21)+
    geom_smooth(aes(x=margin,y=turnout,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
               # color = "#F8766D", 
               size = 1, se=TRUE) +
   geom_smooth(aes(x=margin,y=turnout,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
               # color = "#00BFC4", 
               size = 1, se=TRUE) + 
-  geom_vline(xintercept = 0,linetype="dotted")+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Women on Ballot Next Year in the Same District - Election 2") +
-  theme(legend.position = "none",
-        axis.title.y=element_blank())
+  geom_vline(xintercept = 0)+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+  ggtitle("Women on Ballot Next Year in the Same District - Election 2") 
 
 
 #============================== Graph 3 =========================================  
   
 
 
-g3 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_e,colour=factor(won),size=n), shape=20)+
+g3 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_e,fill=factor(won),size=n), shape=20)+
    geom_smooth(aes(x=margin,y=electorate,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
               # color = "#F8766D", 
               size = 1, se=TRUE) +
   geom_smooth(aes(x=margin,y=electorate,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
               # color = "#00BFC4", 
               size = 1, se=TRUE) + 
-  geom_vline(xintercept = 0,linetype="dotted")+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Women on Ballot Next Year in the Same District - Election 2") +
-  theme(legend.position = "none",         axis.title.y=element_blank())
+  geom_vline(xintercept = 0)+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+  ggtitle("Women on Ballot Next Year in the Same District - Election 2") 
 
   
+# g3<-ggplot(dat_filtered, aes(x=margin,y=electorate))+
+#   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+#               color = "#F8766D", 
+#               size = 1, se=TRUE) +
+#   geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+#               color = "#00BFC4", 
+#               size = 1, se=TRUE)+
+#   geom_vline(xintercept = 0)+
+#   stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin <= 0,], 
+#                          color = "#F8766D")+
+#   stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin >= 0,], 
+#                          color = "#00BFC4")+
+#   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+#   ggtitle("Female Percentage of Electorate - Election 2")+
+#   theme_minimal()
+
+
+
+
 
 gridExtra::  grid.arrange(g2,g3,g1,nrow=3)
 
@@ -345,71 +409,74 @@ stargazer(regcand75,regcand10,regwin75,regwin10,type = "html",title="Table 2 - R
 
 ### Replication- Figure 4
 
-```{r Figure 4, error=FALSE, fig.height=5, fig.width=10, message=FALSE, warning=FALSE, hold=TRUE}
+```{r Graphics 2, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE,fig.width=10}
 
-#============================== Graph 4 =========================================
-
-g4<-ggplot()+geom_point(data=dat_g,aes(x=x,y=c75,colour=factor(won),size=n), shape=20)+
-  geom_text(show.legend = FALSE)+
-   geom_smooth(aes(x=margin,y=cand75,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
-              size = 1, se=TRUE) +
-  geom_smooth(aes(x=margin,y=cand75,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
-              size = 1, se=TRUE) + 
-  geom_vline(xintercept = 0,linetype="dotted")+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
+g4<-ggplot(dat_filtered, aes(x=margin,y=cand75))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Candidates 75 miles")+
-  theme(legend.position = "none",         axis.title.y=element_blank())
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
+  theme_minimal()
 
 
+g5<-ggplot(dat_filtered, aes(x=margin,y=cand10))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+  # xlab("Female Margin of Victory - Election 1")+
+  ggtitle("Female Candidates 10 Closest")+
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
+  theme_minimal()
+
+g6<-ggplot(dat_filtered, aes(x=margin,y=win75))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
+  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
+  ggtitle("Female Win 75 miles")+
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
+  theme_minimal()
 
 
-#============================== Graph 5 =========================================
-
-
-g5 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=c10,colour=factor(won),size=n), shape=20)+
-   geom_smooth(aes(x=margin,y=cand10,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
-              # color = "#F8766D", 
-              size = 1, se=TRUE) +
-  geom_smooth(aes(x=margin,y=cand10,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
-              # color = "#00BFC4", 
-              size = 1, se=TRUE) + 
-  geom_vline(xintercept = 0,linetype="dotted")+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Female Candidates 10 closest")+
-  theme(legend.position = "none",         axis.title.y=element_blank())
-
-
-#============================== Graph 6 =========================================  
-  
-
-
-g6 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=w75,colour=factor(won),size=n), shape=20)+
-   geom_smooth(aes(x=margin,y=win75,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
-              # color = "#F8766D", 
-              size = 1, se=TRUE) +
-  geom_smooth(aes(x=margin,y=win75,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
-              # color = "#00BFC4", 
-              size = 1, se=TRUE) + 
-  geom_vline(xintercept = 0,linetype="dotted")+
-  scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Female Win 75 Miles")+
-  theme(legend.position = "none",         axis.title.y=element_blank())
-
-
-#============================== Graph 7 =========================================  
-  
-
-
-g7 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=w10,colour=factor(won),size=n), shape=20)+
-   geom_smooth(aes(x=margin,y=win10,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
-              size = 1, se=TRUE) +
-  geom_smooth(aes(x=margin,y=win10,colour=factor(womanwon)),method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
-              size = 1, se=TRUE) + 
-  geom_vline(xintercept = 0,linetype="dotted")+
+g7<-ggplot(dat_filtered, aes(x=margin,y=win10))+
+    geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D", 
+                         size = 1, se=TRUE) +
+  geom_smooth(method = "lm",formula = y~poly(x,4),data = dat_filtered[dat_filtered$margin >= 0,], 
+              color = "#00BFC4", 
+              size = 1, se=TRUE)+
+  geom_vline(xintercept = 0)+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
   ggtitle("Female Win 10 Closest")+
-  theme(legend.position = "none",         axis.title.y=element_blank())
-
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin <= 0,], 
+                         color = "#F8766D")+
+  stat_summary_bin(fun="mean",binwidth = 0.005, size=.1, data = dat_filtered[dat_filtered$margin >= 0,], 
+                         color = "#00BFC4")+
+  theme_minimal()
 
 gridExtra::  grid.arrange(g4,g6,g5,g7,nrow=2)
 
@@ -519,7 +586,7 @@ The conclusion is that the model is robust to a linear specification with differ
 ### Sorting Around the Threshold
 
 
-```{r Graphics 3, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE,fig.width=6,fig.height=3}
+```{r Graphics 3, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE,fig.width=10}
 ggplot(dat_filtered,aes(margin,fill=Pty,colour=Pty))+
          geom_density(alpha=.1)+
         geom_vline(xintercept=0,linetype="dotted" )+
