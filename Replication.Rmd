@@ -18,29 +18,11 @@ output:
       collapsed: no
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-# library(robustbase)
-library(foreign)
-library(tidyr)
-library(car)
-library(ggplot2)
-# library(rdd)
-library(dplyr)
-library(stargazer)
-library(rdrobust)
-# library(jtools)
-# library(kableExtra)
-# library(MASS)
-library(sandwich)
-library(lmtest)
-library(gtable)
-# library(estimatr)
-rm(list = ls())
-dat<-read.dta("./Data/main data.dta")
-dat <- dat %>% rename(nextyear=femaleonballotnextyear,
-                      margin=femalecand_margin_of_victory,
-                      turnout=femaleturnout_nextcycle, electorate=female_percentageofelectorate_ne,cand10=femcands_over_contests_next_10r,cand75=femcands_over_contests_next_75m,win10=femwins_over_contests_next_10r,win75=femwins_over_contests_next_75m)
+```{r setup}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE)
 
 ```
 
@@ -54,7 +36,7 @@ dat <- dat %>% rename(nextyear=femaleonballotnextyear,
 
 ## Women in Politics
 
-This work presents the replication of the results from the paper **Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach** by *David E. Broockman* from the Department of Political Science, University of California, Berkeley. The paper's goal was to test the hypothesis that an increase in women's representation as elected officials has a positive effect on female participation in politics both in mass and elite levels.
+This work presents the replication of the results from the paper **Do female politicians empower women to vote or run for ofﬁce? A regression discontinuity approach** by *David E. Broockman* [@pap] from the Department of Political Science, University of California, Berkeley. The paper's goal was to test the hypothesis that an increase in women's representation as elected officials has a positive effect on female participation in politics both in mass and elite levels.
 
 The gender gap in politics is a pressing issue in many countries, both in terms of mass and elite participation. Participation in the mass level means casting; participation in the elite level means occupying positions as elected officials. Such a phenomenon has called the attention of many scholars. And some relevant results confirmed the hypothesis for specific realities, such as in India [@dein]
 
@@ -110,6 +92,27 @@ Statistically, there was no discernible effect. The election of an additional wo
 
 # Analysis
 
+```{r Libraries and Data, collapse=FALSE}
+
+library(foreign)
+library(tidyr)
+library(car)
+library(ggplot2)
+library(dplyr)
+library(stargazer)
+library(rdrobust)
+library(sandwich)
+library(lmtest)
+library(gtable)
+
+rm(list = ls())
+dat<-read.dta("./Data/main data.dta")
+dat <- dat %>% rename(nextyear=femaleonballotnextyear,
+                      margin=femalecand_margin_of_victory,
+                      turnout=femaleturnout_nextcycle, electorate=female_percentageofelectorate_ne,cand10=femcands_over_contests_next_10r,cand75=femcands_over_contests_next_75m,win10=femwins_over_contests_next_10r,win75=femwins_over_contests_next_75m)
+
+```
+
 ## Does electing women empower other women to vote?
 
 The first result to be replicated are the effect of  women on ballot, women's turnout in the next election, and women's turnout elative to total electorate.
@@ -133,10 +136,9 @@ date <- dat_filtered %>% dplyr:: select(margin,womanwon,electorate)
 # ================ Column 1 Table 1====================================================
 
 reg1<-lm(nextyear~margin+I(margin^2)+
-           I(margin^3)+I(margin^4)+
+           I(margin^3)+I(margin^4)+womanwon+
            margin*womanwon+I(margin^2)*womanwon+I(margin^3)*womanwon+
-           I(margin^4)*womanwon+womanwon,dat_filtered)
-
+           I(margin^4)*womanwon,dat_filtered)
 
 # Robust standard error estimate 
 
@@ -188,7 +190,7 @@ stargazer(reg1,reg2,reg3,type = "html",title="Table 1 - Replication",
 
 ### Replication - Figure 3
 
-Some visualization improvements were made in the graphic if compared to the paper. First, I associated different colors for information bellow, and above the cutoff, I also binned data is by its mean, as a point,  and confidence interval, as a line. I judge this approach as more adequate since it clearly shows how the data varies within each bin.
+Some visualization improvements were made in the graphic if compared to the paper. First, I associated different colors for information bellow, and above the cutoff, I also binned data is by its mean,with size proportional to the number of observations in each bin.
 
 ```{r Figure 3, error=FALSE, message=FALSE, warning=FALSE, hold=TRUE}
 # 
@@ -210,7 +212,7 @@ g1<-ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_n,colour=factor(won),size=n), 
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Women on Ballot Next Year in the Same District - Election 2") +
+  ggtitle("(c) Women on Ballot Next Year in the Same District - Election 2") +
   theme(legend.position = "none",
         axis.title.y=element_blank())
 
@@ -229,7 +231,7 @@ g2 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_t,colour=factor(won),size=n)
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Women on Ballot Next Year in the Same District - Election 2") +
+  ggtitle("(a) Female Voter Turnout - Election 2") +
   theme(legend.position = "none",
         axis.title.y=element_blank())
 
@@ -247,7 +249,7 @@ g3 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=mean_e,colour=factor(won),size=n)
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Women on Ballot Next Year in the Same District - Election 2") +
+  ggtitle("(b) Female Percentage of the Electorate - Election 2") +
   theme(legend.position = "none",         axis.title.y=element_blank())
 
   
@@ -267,7 +269,7 @@ In this part of the paper, the authors investigate possible spillover effects in
 
 They examined two effects: women's candidacies and women's turnout. The results show the estimated impact for districts picked within 75 miles from the district where a female won or lost, and for the 10 closest districts criteria.
 
-### Replication- Table 2
+### Replication - Table 2
 
 ```{r Table2,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
 
@@ -343,7 +345,12 @@ stargazer(regcand75,regcand10,regwin75,regwin10,type = "html",title="Table 2 - R
 ```
 
 
-### Replication- Figure 4
+
+**The results are exactly the same obtained by the author. **
+
+
+### Replication - Figure 4
+
 
 ```{r Figure 4, error=FALSE, fig.height=5, fig.width=10, message=FALSE, warning=FALSE, hold=TRUE}
 
@@ -357,7 +364,7 @@ g4<-ggplot()+geom_point(data=dat_g,aes(x=x,y=c75,colour=factor(won),size=n), sha
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Female Candidates 75 miles")+
+  ggtitle("(a) Female Candidates 75 miles")+
   theme(legend.position = "none",         axis.title.y=element_blank())
 
 
@@ -375,7 +382,7 @@ g5 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=c10,colour=factor(won),size=n), s
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Female Candidates 10 closest")+
+  ggtitle("(c) Female Candidates 10 closest")+
   theme(legend.position = "none",         axis.title.y=element_blank())
 
 
@@ -392,7 +399,7 @@ g6 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=w75,colour=factor(won),size=n), s
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15),expand = c(0, 0))+
-  ggtitle("Female Win 75 Miles")+
+  ggtitle("(b) Female Win 75 Miles")+
   theme(legend.position = "none",         axis.title.y=element_blank())
 
 
@@ -407,7 +414,7 @@ g7 <- ggplot()+geom_point(data=dat_g,aes(x=x,y=w10,colour=factor(won),size=n), s
               size = 1, se=TRUE) + 
   geom_vline(xintercept = 0,linetype="dotted")+
   scale_x_continuous("Female Margin of Victory - Election 1", breaks = c(-.15,-.1,-.05,0,.05,.1,.15),limits=c(-.15,.15))+
-  ggtitle("Female Win 10 Closest")+
+  ggtitle("(d) Female Win 10 Closest")+
   theme(legend.position = "none",         axis.title.y=element_blank())
 
 
@@ -416,16 +423,18 @@ gridExtra::  grid.arrange(g4,g6,g5,g7,nrow=2)
 ```
 
 
-The graphs present the same results as the paper. Visually it is possible to see that none of the graphs presents significant local average treatment effect in the around the threshold.
+The graphs present the same results as the paper. Visually it is possible to see that none of the graphs present significant local average treatment effect.
 
 
 # Extension
 
 ## Falsification Checks
 
-To test the robustness of the results, we do some falsification checks that are no present in the paper. The first one is robustness to specification, testing a linear model with different slopes. Also, we check for any covariate sorting around the threshold, especially for party affiliation, which could indicate some discontinuity of covariates.
+To test the robustness of the results, we do some falsification checks that are no present in the paper. The first one is a placebo cutoff at 0.05 female margin of victory, the second is robustness to specification, testing a linear model with different slopes, and the third test check for any covariate sorting around the threshold, for party affiliation, which could indicate some discontinuity of covariates.
 
-## Placebo Cutoff
+### Placebo Cutoff
+
+The results show that the placebo cutoff at the point of a 0.05 positive female margin of victory doesn't produce any statistically significant result, as expected.
 
 ```{r Table3,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
 #===================== Placebo Cutoff-  Table 1 ==========================
@@ -459,12 +468,14 @@ stargazer(regp1, regp2,regp3,type = "html",title= "Table 3 - Placebo Cutoff",
 
 ```
 
-### Sensitivity
+### Sensitivity to Specification
+
+The results show that the model, specifically for the results from Table 1 changes are not signification for a linear specification with different slopes.
 
 ```{r Table4,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
 
 
-# ================ Column 1 Table 3====================================================
+# ================ Column 1 Table 4====================================================
 
 regl1 <- lm(nextyear~womanwon+margin+womanwon*margin,data = dat_filtered)
 
@@ -473,7 +484,7 @@ regl1 <- lm(nextyear~womanwon+margin+womanwon*margin,data = dat_filtered)
 cov1 <- vcovHC(regl1, type = "HC1") 
 robust.sel1 <- sqrt(diag(cov1))
 
-# ================ Column 2 Table 3====================================================
+# ================ Column 2 Table 4====================================================
 
 # Linear regression for the 2nd column
 regl2 <- lm(turnout~womanwon+margin+womanwon*margin,data = dat_filtered)
@@ -482,7 +493,7 @@ regl2 <- lm(turnout~womanwon+margin+womanwon*margin,data = dat_filtered)
 covl2 <- vcovHC(regl2, type = "HC1")
 robust.sel2 <- sqrt(diag(covl2))
 
-# ================ Column 3 Table 3====================================================
+# ================ Column 3 Table 4====================================================
 
 # Linear regression for the 3rd column
 
@@ -493,9 +504,9 @@ regl3 <- lm(electorate~womanwon+margin+womanwon*margin,data = dat_filtered)
 covl3 <- vcovHC(regl3, type = "HC1")
 robust.sel3 <- sqrt(diag(covl3))
 
-# ===========================Table 1-Replication========================================
+# ===========================Table 4================================
 
-stargazer(reg1, reg2,reg3,regl1,regl2,regl3,type = "html",title= "Table 3 - Sensitivity",
+stargazer(reg1, reg2,reg3,regl1,regl2,regl3,type = "html",title= "Table 4 - Sensitivity",
           keep.stat=c("n","rsq","bic"), 
           se=list(robust.se1,robust.se2,robust.se3,robust.sel1,robust.sel2,robust.sel3),
           covariate.labels = c("Woman Won","Constant"),
@@ -511,12 +522,15 @@ stargazer(reg1, reg2,reg3,regl1,regl2,regl3,type = "html",title= "Table 3 - Sens
 ```
 
 <br>
+
 Where WB, FT and PE, are the dependent variables corresponding to the first, second and third column of the Table 1, respectively.
 
 The conclusion is that the model is robust to a linear specification with different slopes.
 
 
 ### Sorting Around the Threshold
+
+The density probablity function shows a possible sorting just above the threshold for candidates without party affiliation. Also, it also shows a higher frequency of democrats bellow the cutoff if compared to Republicans.
 
 
 ```{r Graphics 3, hold=TRUE,warning=FALSE,error=FALSE,message=FALSE,fig.width=6,fig.height=3}
@@ -529,26 +543,23 @@ ggplot(dat_filtered,aes(margin,fill=Pty,colour=Pty))+
 
 ```
 
-
-The density probablity function shows a possible sorting just above the threshold for candidates without party affiliation. Also, it also shows a higher frequency of democrats bellow the cutoff if compared to Republicans.
-
-Theses results may indicate some discontinuity of unobserved covariates around the threshold. Some hyphotesis to explain this phenomenon could be that non-affiliated candidates has a previous expected advatage in the race that could make them no unwilling to be attached to any party and to the consequent obligations. The difference among Democrats and Republicans around the treshold, is less straightforward to explain, and should require further investigation.
+These results may indicate some discontinuity of unobserved covariates around the threshold. Some hyphotesis to explain this phenomenon could be that non-affiliated candidates has a previous expected advatage in the race that could make them no unwilling to be attached to any party and to the consequent obligations. The difference among Democrats and Republicans around the treshold, is less straightforward to explain, and should require further investigation.
 
 
 
 
+## Partisanship 
 
-### Partisanship 
+Another important analysis is to check possible differences of effects accordig to partisanship of the voters, for the results showed in the Table 1.
+
+According to a research carried out by [@pew], from Washington DC. Democrats and Republicans have different views about gender gaps. Some findings are that: 
+
+- Democrats are largely dissatisfied with the nation's progress on this issue if compared to Republicans
+
+- Democrats are also much more likely than Republicans to say that men have easier lives than women these days
 
 
-According to a research carried out by [@pew], from Whashigton DC. Democrats and Republicans have different views about gender gaps. Some findinds are that: 
-
-- Democrats are largely dissatisfied with the nation’s progress on this issue if compared to Republicans
-
--Democrats are also much more likely than Republicans to say that men have easier lives
-than women these days
-
-So, the hyphotesis to be testest here is about partisanship would affect the results. In order to test this hypothesis the elections were divided by  party afiliation of the candidate. The hypothesis is that electing a womand would have an higher impact on Republicans candidates, since the pre-conceptions about gender roles for this group would be challenged.
+So, the hypothesis to be tested here is whether partisanship would affect the results. To examine this hypothesis,  I subset the data by party affiliation. The reason is that electing a woman would have a higher impact on Republican electorate since after a woman's election, this group would have a higher potential for learning and changing attitudes about woman's role in the political arena.
 
 ```{r Table5,warning=FALSE,echo=TRUE,warning=FALSE,results='asis'}
 
@@ -609,7 +620,7 @@ robust.se3p <- sqrt(diag(cov3p))
 
 # ===========================Table 4========================================
 
-stargazer(reg1d,reg2d,reg3d,reg1p,reg2p,reg3p,type = "html",title= "Table 4 - Partisanship",
+stargazer(reg1d,reg2d,reg3d,reg1p,reg2p,reg3p,type = "html",title= "Table 5 - Partisanship",
           keep.stat=c("n","rsq","bic"), 
           se=list(robust.se1d,robust.se2d,robust.se1p,robust.se2p,robust.se3p),
           covariate.labels = c("Woman Won","Constant"),
